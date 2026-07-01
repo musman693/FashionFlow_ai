@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "seed": "node src/scripts/seedAdmin.js"
+    "seed": "node src/scripts/seedAdmin.js",
+    "seed:products": "node src/scripts/seedProducts.js",
+    "test:redis": "node src/scripts/testRedisLayer.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
