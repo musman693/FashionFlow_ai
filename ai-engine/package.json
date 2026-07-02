@@ -1,0 +1,20 @@
+{
+  "name": "fashionflow-ai-engine",
+  "version": "1.0.0",
+  "description": "Module 3 - AI Intent & Sentiment Engine for FashionFlow AI Sales Assistant",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node tests/testCases.js"
+  },
+  "dependencies": {
+    "@langchain/openai": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "langchain": "^0.3.0",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "dotenv": "^16.4.5"
+  }
+}
