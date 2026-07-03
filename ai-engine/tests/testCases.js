@@ -69,3 +69,31 @@ run().catch((err) => {
   console.error('Test run failed:', err);
   process.exit(1);
 });
+// Add this inside the run() function execution flow in your existing tests/testCases.js file
+
+const { processRecommendation } = require('../src/recommendation/recommendEngine');
+
+const RECOMMENDATION_TESTS = [
+  "black dresses under Rs 5000",
+  "men's shirts in large size",
+  "trending outfits for summer",
+  "kurtas on sale off"
+];
+
+async function runRecommendationTests() {
+  console.log('\n=== MODULE 4 PRODUCT RECOMMENDATION ENGINE TESTS ===\n');
+  for (const query of RECOMMENDATION_TESTS) {
+    console.log(`[Testing Query]: "${query}"`);
+    try {
+      const output = await processRecommendation(query);
+      console.log(`- Generated Mongo Query Clause:`, JSON.stringify(output.mongo_filter_generated));
+      console.log(`- Upsell Trigger Status: ${output.upsell_applied}`);
+      console.log(`- Final WhatsApp Natural Output:\n${output.ai_response}`);
+    } catch (e) {
+      console.error(`Failed test sequence for query: ${query}`, e.message);
+    }
+    console.log('----------------------------------------------------');
+  }
+}
+
+// Just invoke runRecommendationTests() inside your primary run() function block.
