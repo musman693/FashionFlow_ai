@@ -1,58 +1,55 @@
 // src/controllers/instagramController.js
+const axios = require('axios');
 
-// 1. Verification Endpoint (Jo hum test kar chuke hain)
+// 1. Verification Endpoint
 const verifyWebhook = (req, res) => {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
+    // Yahan apni .env file wali token use karen
     const VERIFY_TOKEN = process.env.INSTAGRAM_VERIFY_TOKEN || 'my_secret_token_123';
 
-    if (mode && token) {
-        if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-            console.log('=== INSTAGRAM WEBHOOK VERIFIED SUCCESSFULLY ===');
-            return res.status(200).send(challenge);
-        } else {
-            return res.sendStatus(403);
-        }
+    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+        return res.status(200).send(challenge);
     }
+    return res.sendStatus(403);
 };
 
-// 2. Incoming Message Handler (Jis par ab hum kaam kar rahe hain)
+// 2. Incoming Message Handler
 const handleWebhookEvent = async (req, res) => {
     const body = req.body;
 
-    // Check karen ke event instagram ka hi hai
     if (body.object === 'instagram') {
-        
-        // Meta ka data structure nested hota hai, is liye loops lagayenge
-        body.entry.forEach((entry) => {
-            // Check karen agar messaging entry maujood hai
+        for (const entry of body.entry) {
             if (entry.messaging) {
-                entry.messaging.forEach((messagingEvent) => {
-                    const senderId = messagingEvent.sender.id; // Message bhejne wale ki ID
+                for (const messagingEvent of entry.messaging) {
+                    const senderId = messagingEvent.sender.id;
                     
-                    // Check karen agar waqai koi text message aaya hai
                     if (messagingEvent.message && messagingEvent.message.text) {
                         const messageText = messagingEvent.message.text;
                         
-                        console.log(`\n=== NAYA INSTAGRAM MESSAGE AAYA ===`);
-                        console.log(`Sender ID: ${senderId}`);
-                        console.log(`Message: ${messageText}`);
-                        console.log(`==================================\n`);
+                        console.log(`\n=== NAYA MESSAGE: ${messageText} ===`);
 
-                        // TODO: Yahan hum aglay step mein n8n flow ya AI engine ko trigger karenge
+                        // Yahan wo URL jo aapne n8n mein 'Production' ke liye copy kiya tha
+                        const N8N_URL = "https://noorulain2799.app.n8n.cloud/webhook/instagram"; 
+
+                        try {
+                            await axios.post(N8N_URL, {
+                                sender_id: senderId,
+                                message_text: messageText,
+                                platform: 'instagram'
+                            });
+                        } catch (error) {
+                            console.error('n8n error:', error.message);
+                        }
                     }
-                });
+                }
             }
-        });
-
-        // Meta ko 200 OK response dena zaroori hota hai taake wo bar bar event na bheje
+        }
         return res.status(200).send('EVENT_RECEIVED');
-    } else {
-        // Agar event Instagram ka nahi hai toh 404
-        return res.sendStatus(404);
     }
+    return res.sendStatus(404);
 };
 
 module.exports = {
