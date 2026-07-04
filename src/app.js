@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(express.json({ verify: rawBodySaver }));
 app.use(express.urlencoded({ extended: false }));
 
-app.use(rateLimiter);
+//app.use(rateLimiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/webhooks', instagramRoutes);
@@ -38,7 +38,7 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 async function start() {
- await redisClient.connect();
+ //await redisClient.connect();
   return app;
 }
 
