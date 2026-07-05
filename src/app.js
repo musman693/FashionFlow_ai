@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const { env } = require('./config/env');
 const authRoutes = require('./routes/auth');
+const instagramRoutes = require('./routes/instagram');
 const { errorHandler } = require('./middleware/errorHandler');
 const { redisClient } = require('./config/redis');
 const { rateLimiter } = require('./middleware/rateLimit');
@@ -24,9 +25,11 @@ app.use(cookieParser());
 app.use(express.json({ verify: rawBodySaver }));
 app.use(express.urlencoded({ extended: false }));
 
-app.use(rateLimiter);
+//app.use(rateLimiter);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/webhooks', instagramRoutes);
+
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', env: env.NODE_ENV });
@@ -35,7 +38,7 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 async function start() {
-  await redisClient.connect();
+ //await redisClient.connect();
   return app;
 }
 
